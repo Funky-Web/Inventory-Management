@@ -1,0 +1,204 @@
+main {
+  /*background-color: yellow;*/
+}
+
+.header, .overview, .forecasted-sales-\&-recent-sales {
+  margin: 1%;
+  border-radius: 10px;
+}
+
+h3 {
+  color: darkgrey;
+  font-weight: normal;
+}
+
+.header {
+  padding: 0 1%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: rgba(0, 0, 0, 0.25) 0 1px 5px;
+}
+
+.overview {
+  display: flex;
+  justify-content: space-between;
+  height: fit-content;
+}
+
+.overview > div {
+  width: 22%;
+  padding: 1%;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0 1px 5px;
+}
+
+.forecasted-sales-overview {
+  display: flex;
+}
+
+.forecasted-sales-overview > a > h3 {
+  color: blue;
+}
+
+.quick-actions {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.quick-actions > button {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  cursor: pointer !important;
+  align-content: center;
+  justify-content: center;
+  justify-items: center;
+  border-color: blue;
+}
+
+.quick-actions > button > img {
+  height: 40%;
+}
+
+.quick-actions > button > h4 {
+  width: max-content;
+  margin: 0;
+}
+
+
+
+
+
+
+
+.forecasted-sales-\&-recent-sales {
+  display: flex;
+  border-radius: 0;
+  justify-content: space-between;
+}
+
+.forecasted-sales-main, .recent-sales-activity {
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0 1px 5px;
+  padding: 1%;
+}
+
+.forecasted-sales-main {
+  width: 64.5%;
+}
+
+.recent-sales-activity {
+  width: 30%;
+  max-height: 350px;
+  overflow: scroll;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+.recent-sales-activity > table > tr > th {
+  text-align: start;
+}
+
+
+.recent-sales-activity > table {
+  text-align: start;
+  width: 100%;
+}
+
+.recent-sales-activity > h2 {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: white;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*Mobile Screens*/
+@media (max-width: 736px)  {
+  .overview {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    justify-items: center;
+    margin: 5%;
+  }
+
+  .header, .overview > div {
+    margin: 2.5%;
+    padding: 2.5%;
+  }
+
+  .overview > div {
+    width: 100%;
+  }
+
+  .quick-actions {
+    justify-content: space-between;
+  }
+
+  .forecasted-sales-\&-recent-sales {
+    flex-direction: column;
+    margin: 1%;
+  }
+
+  .recent-sales-activity > table {
+    width: 100%;
+  }
+
+  .recent-sales-activity {
+    padding: 2.5%;
+  }
+
+  .forecasted-sales-main, .recent-sales-activity {
+    margin: 2.5%;
+    padding: 2.5%;
+    width: inherit;
+  }
+}
+
+
+
+
+/* ----------- Tablets ----------- */
+@media (min-width: 736px) and (max-width: 1080px) {
+  .overview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    justify-items: center;
+  }
+
+  .overview > div {
+    width: 90%;
+  }
+
+  .header, .overview > div {
+    margin: 2.5%;
+    padding: 2.5%;
+  }
+
+  .quick-actions > button > img {
+    height: 30%;
+  }
+
+  .quick-actions > button {
+    margin: 5px;
+  }
+
+  .quick-actions > button > h4 {
+    width: fit-content;
+  }
+}
