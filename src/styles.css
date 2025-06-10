@@ -1,1 +1,46 @@
 /* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+/*Mobile Screens*/
+@media (max-width: 736px)  {
+  p {
+    font-size: 10px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
+  a {
+    font-size: 10px;
+  }
+}
+
+
+
+
+/* ----------- Tablets ----------- */
+@media (min-width: 736px) and (max-width: 1080px) {
+  p {
+    font-size: 12px;
+  }
+
+  h1 {
+    font-size: 40px;
+  }
+
+  h3 {
+    font-size: 14px;
+  }
+
+  a {
+    font-size: 12px;
+  }
+}
