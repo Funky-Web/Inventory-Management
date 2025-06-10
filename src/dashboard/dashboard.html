@@ -1,0 +1,87 @@
+<main>
+  <section class="header">
+    <h2>Inventory Dashboard</h2>
+    <div>
+      <h2>John Cash</h2>
+    </div>
+  </section>
+
+  <section class="overview">
+    <div>
+      <h2>Inventory Overview</h2>
+      <h3>Total Products</h3>
+      <h2>230</h2>
+    </div>
+
+    <div>
+      <h2>Sales Summary</h2>
+      <h3>Sales Today</h3>
+      <h2>58</h2>
+    </div>
+
+    <div>
+      <h2>Forecasted Sales</h2>
+
+      <div class="forecasted-sales-overview">
+        <img src="/assets/icons/open-forecasted-sales.svg" alt="open-forecasted-sales">
+        <a routerLink="forecasted-sales"><h3>forecasted sales</h3></a>
+      </div>
+    </div>
+
+    <div class="quick-actions-main">
+      <h2>Quick Actions</h2>
+      <div class="quick-actions">
+        <button>
+          <img src="/assets/icons/add-icon.svg" alt="add-icon">
+          <h4>Add Product</h4>
+        </button>
+
+        <button>
+          <img src="/assets/icons/record-sale-icon.svg" alt="record-sale-icon">
+          <h4>Record Sale</h4>
+        </button>
+
+        <button>
+          <img src="/assets/icons/view-report-icon.svg" alt="view-report-icon">
+          <h4>View Report</h4>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="forecasted-sales-&-recent-sales">
+
+    <div class="forecasted-sales-main">
+      <h2>Monthly Sales Forecast</h2>
+      <app-sales-line-chart></app-sales-line-chart>
+    </div>
+
+    <div class="recent-sales-activity">
+      <h2>Recent Sales Activity</h2>
+
+      <table>
+        <tr>
+          <th>Date</th>
+          <th>Product</th>
+          <th>Stock</th>
+          <th>Forecast</th>
+        </tr>
+
+        @for (sales of recentSales; track sales) {
+          <tr>
+            <td>{{ sales.date }}</td>
+            <td>{{ sales.productName }}</td>
+            <td>{{ sales.stock }}</td>
+            @if (sales.isMovingUp) {
+              <td><img src="/assets/icons/profit-forecast.svg" alt="profit-forecast"></td>
+            } @else {
+              <td><img src="/assets/icons/lost-forecast.svg" alt="lost-forecast"></td>
+            }
+          </tr>
+        } @empty {
+          <!-- TODO: display an empty data svg-->
+        }
+      </table>
+    </div>
+  </section>
+</main>
