@@ -1,0 +1,53 @@
+.main {
+  width: 100%;
+}
+
+.header {
+  width: inherit;
+  display: flex;
+  justify-content: space-between;
+}
+
+.all-products-main {
+  /*background-color: yellow;*/
+}
+
+.label-and-search-product {
+  display: flex;
+  align-items: center;
+}
+
+.label-and-search-product > search {
+  margin: 0 2.5%;
+  border-radius: 10px;
+  box-shadow: 1px 1px 8px lightgrey;
+}
+
+.label-and-search-product > search > form > input {
+  padding: 10px;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+}
+
+
+.all-products-list {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+}
+
+.all-products-list > button {
+  margin: 8px 12px 8px 0;
+  border-radius: 15px;
+  padding: 8px;
+  cursor: pointer;
+  border: none;
+  box-shadow: 1px 1px 4px lightgrey;
+}
+
+.divider {
+  height: 1px;
+  width: 99%;
+  margin: 2% 0;
+  background-color: lightgrey;
+}

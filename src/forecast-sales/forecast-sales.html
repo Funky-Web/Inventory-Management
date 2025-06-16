@@ -1,0 +1,25 @@
+<main class="main">
+
+  <section class="header">
+    <h1>Forecast Sales</h1>
+  </section>
+
+  <section class="all-products-main">
+    <div class="label-and-search-product">
+      <h2>Products</h2>
+      <search>
+        <form>
+          <input type="search" placeholder="Search product name">
+        </form>
+      </search>
+    </div>
+  </section>
+
+  <section class="all-products-list">
+    @for (product of allProducts; track product) {
+      <button>{{ product.productName }}</button>
+    }
+  </section>
+
+  <div class="divider"></div>
+</main>

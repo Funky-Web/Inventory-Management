@@ -1,0 +1,63 @@
+.main {
+  width: 100%;
+}
+
+.header {
+  width: inherit;
+  display: flex;
+  justify-content: space-between;
+}
+
+.forecasted-sales-overview {
+  display: flex;
+  width: 20%;
+  align-items: center;
+}
+
+.forecasted-sales-overview > img {
+  height: 40%;
+}
+
+.refresh-btn {
+  margin-right: 1%;
+  cursor: pointer !important;
+}
+
+.product-selection {
+  width: inherit;
+  /*background-color: cadetblue;*/
+}
+
+.product-selection > select {
+  border-radius: 5px;
+  cursor: pointer !important;
+  font-size: 15px;
+  padding: 5px;
+}
+
+.product-selection > select > option {
+  font-size: 15px;
+}
+
+.product-forecast-table {
+  width: 98%;
+  border: 1px solid whitesmoke;
+  border-radius: 5px;
+  /*background-color: yellow;*/
+}
+
+.product-forecast-table > table {
+  width: inherit;
+  /*background-color: orange;*/
+}
+
+.product-forecast-table > table > tr > th {
+  background-color: whitesmoke;
+  text-align: start;
+  padding: 5px;
+}
+
+.product-forecast-table > table > tr > td {
+  padding: 5px;
+}
+

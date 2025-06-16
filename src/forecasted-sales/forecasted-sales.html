@@ -1,0 +1,60 @@
+<main class="main">
+
+  <section class="header">
+    <h1>Forecasted Sales</h1>
+<!--    <button class="refresh-btn">refresh</button>-->
+    <div class="forecasted-sales-overview">
+      <img src="/assets/icons/open-forecasted-sales.svg" alt="open-forecasted-sales">
+      <a routerLink="forecast-sales"><h3>forecast sales</h3></a>
+    </div>
+  </section>
+
+  <section class="product-selection">
+    <select>
+      <option>Tomatoes</option>
+      <option>Banana</option>
+      <option>Umbrella</option>
+      <option>Toffees</option>
+    </select>
+
+    <p class="forecast-start-and-end-date">26-01-2024 - 01-05-2025</p>
+  </section>
+
+  <section class="product-forecast-table">
+    <table>
+      <tr>
+        <th>Months</th>
+        <th>Past Sales</th>
+        <th>Forecasted Sales</th>
+        <th>Actual Sales</th>
+        <th>Remark</th>
+      </tr>
+
+      @for (forecastedSale of forecastedSales; track forecastedSale) {
+        <tr>
+          <td>{{ forecastedSale.month }}</td>
+          <td>GHS {{ forecastedSale.pastSales }}</td>
+          <td>GHS {{ forecastedSale.forecastedSales }}</td>
+          <td>GHS {{ forecastedSale.actualSales }}</td>
+          @if (forecastedSale.remark == "profit") {
+
+            <!--Todo: show profit icon-->
+            <td><img src="/assets/icons/profit-forecast.svg" alt="profit-forecast"></td>
+
+          } @else if (forecastedSale.remark == "equal") {
+
+            <!--Todo: show equal icon-->
+            <td><img src="/assets/icons/profit-forecast.svg" alt="profit-forecast"></td>
+
+          } @else {
+
+            <!--Todo: show loss icon-->
+            <td><img src="/assets/icons/lost-forecast.svg" alt="lost-forecast"></td>
+
+          }
+        </tr>
+      }
+
+    </table>
+  </section>
+</main>
