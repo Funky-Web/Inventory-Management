@@ -1,6 +1,23 @@
 
 <main class="main">
+  <div class="side-nav-bar">
+    <h1>App Icon</h1>
+    <ul>
+      <li>
+        <a routerLink="/" routerLinkActive="active-tab" [routerLinkActiveOptions]="{exact: true}">Home</a>
+      </li>
+      <li>
+        <a routerLink="forecasted-sales" routerLinkActive="active-tab" [routerLinkActiveOptions]="{exact: true}">Forecasted Sales</a>
+      </li>
+      <li>
+        <a routerLink="forecast-sales" routerLinkActive="active-tab" [routerLinkActiveOptions]="{exact: true}">Forecast Sales</a>
+      </li>
+    </ul>
+  </div>
+
   <div class="content">
-    <router-outlet></router-outlet>
+    <div class="content-child">
+          <router-outlet></router-outlet>
+    </div>
   </div>
 </main>
