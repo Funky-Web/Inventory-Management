@@ -1,25 +1,42 @@
 <main class="main">
 
-  <section class="header">
-    <h1>Forecast Sales</h1>
-  </section>
+  <div class="body">
 
-  <section class="all-products-main">
-    <div class="label-and-search-product">
-      <h2>Products</h2>
-      <search>
-        <form>
-          <input type="search" placeholder="Search product name">
-        </form>
-      </search>
-    </div>
-  </section>
 
-  <section class="all-products-list">
-    @for (product of allProducts; track product) {
-      <button>{{ product.productName }}</button>
+    <section class="header">
+      <h1>Forecast Sales</h1>
+    </section>
+
+    <section class="all-products-main">
+      <div class="label-and-search-product">
+        <h2>Products</h2>
+        <search>
+          <form>
+            <input type="search" placeholder="Search product name">
+          </form>
+        </search>
+      </div>
+    </section>
+
+    <section class="all-products-list">
+      @for (product of allProducts; track product) {
+        <button (click)="openDialog(product)">
+          {{ product.productName }}
+        </button>
+      }
+    </section>
+
+    <div class="divider"></div>
+
+    @if (!selectedProduct) {
+      <div class="empty-state">
+        <img src="assets/no-data.svg" alt="No data illustration" />
+        <h3>No Product Selected</h3>
+        <p>Please select a product from the list above to forecast sales.</p>
+      </div>
     }
-  </section>
 
-  <div class="divider"></div>
+
+  </div>
+
 </main>
