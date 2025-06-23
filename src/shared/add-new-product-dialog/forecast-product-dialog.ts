@@ -14,8 +14,8 @@ import { ForecastConfig } from '../../forecast-sales/forecast-config';
 @Component({
   selector: 'app-add-new-product-dialog',
   standalone: true,
-  templateUrl: './add-new-product-dialog.html',
-  styleUrls: ['./add-new-product-dialog.css'],
+  templateUrl: './forecast-product-dialog.html',
+  styleUrls: ['./forecast-product-dialog.css'],
   imports: [
     FormsModule,
     ReactiveFormsModule,
@@ -28,7 +28,7 @@ import { ForecastConfig } from '../../forecast-sales/forecast-config';
     DatePicker
   ]
 })
-export class AddNewProductDialog {
+export class ForecastProductDialog {
   forecastPeriod: number | null = null;
   historicalStart: Date | null = null;
   forecastModel: string | null = null;
