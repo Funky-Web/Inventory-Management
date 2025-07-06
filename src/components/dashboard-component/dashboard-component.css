@@ -10,9 +10,8 @@
 }
 
 .header-content {
-  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 5%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -63,9 +62,9 @@ tr.highlight {
 }
 
 .dashboard-main {
-  max-width: 1200px;
+  /*max-width: 1200px;*/
   margin: 0 auto;
-  padding: 30px 20px;
+  padding: 30px 5%;
 }
 
 .metrics-grid {
@@ -158,6 +157,12 @@ tr.highlight {
 
 .forecast-controls {
   margin-bottom: 15px;
+}
+
+.forecast-controls-left {
+  height: 52px;
+  /*width: 1px;*/
+  /*background-color: red;*/
 }
 
 .forecast-controls select {

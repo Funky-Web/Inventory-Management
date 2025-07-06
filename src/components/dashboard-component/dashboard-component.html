@@ -20,7 +20,7 @@
         </div>
       </div>
 
-      <div class="metric-card" (click)="scrollToLowStock()">
+      <div class="metric-card clickable" (click)="scrollToLowStock()">
         <div class="metric-icon">⚠️</div>
         <div class="metric-info">
           <h3>Low Stock</h3>
@@ -49,6 +49,7 @@
       <div class="chart-section">
         <div class="card chart-card">
           <h3>Inventory Levels</h3>
+          <div class="forecast-controls-left"></div>
           <div class="chart-wrapper">
             <canvas #inventoryChart></canvas>
           </div>
