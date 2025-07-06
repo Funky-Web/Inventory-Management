@@ -1,0 +1,227 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1>📦 Inventory Dashboard</h1>
+      <div class="header-actions">
+        <span class="user-info">Welcome, Admin</span>
+        <button class="logout-btn" (click)="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+
+    <div class="metrics-grid">
+      <div class="metric-card clickable" (click)="scrollToInventory()">
+        <div class="metric-icon">📊</div>
+        <div class="metric-info">
+          <h3>Total Items</h3>
+          <p class="metric-value">{{ getTotalItems() }}</p>
+        </div>
+      </div>
+
+      <div class="metric-card" (click)="scrollToLowStock()">
+        <div class="metric-icon">⚠️</div>
+        <div class="metric-info">
+          <h3>Low Stock</h3>
+          <p class="metric-value">{{ getLowStockCount() }}</p>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">💰</div>
+        <div class="metric-info">
+          <h3>Total Value</h3>
+          <p class="metric-value">${{ getTotalValue() | number:'1.0-0' }}</p>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">📈</div>
+        <div class="metric-info">
+          <h3>Forecast Accuracy</h3>
+          <p class="metric-value">{{ getForecastAccuracy() }}%</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="chart-section">
+        <div class="card chart-card">
+          <h3>Inventory Levels</h3>
+          <div class="chart-wrapper">
+            <canvas #inventoryChart></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="forecast-section">
+        <div class="card chart-card">
+          <h3>Demand Forecast</h3>
+          <div class="forecast-controls">
+            <select [(ngModel)]="forecastPeriod" (change)="updateForecast()">
+              <option value="7">7 Days</option>
+              <option value="30">30 Days</option>
+              <option value="90">90 Days</option>
+            </select>
+          </div>
+          <div class="chart-wrapper">
+            <canvas #forecastChart></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="tables-section" id="inventory-section">
+      <div class="card">
+        <div class="table-header">
+          <h3>Inventory Items</h3>
+          <div class="table-controls">
+            <input
+              type="text"
+              placeholder="Search..."
+              [(ngModel)]="searchTerm"
+              (input)="filterItems()" />
+
+            <select [(ngModel)]="selectedStatus" (change)="filterItems()">
+              <option value="all">All Statuses</option>
+              <option value="in">In Stock</option>
+              <option value="low">Low Stock</option>
+              <option value="out">Out of Stock</option>
+            </select>
+
+            <button class="add-btn" (click)="showAddItem = !showAddItem">+ Add Item</button>
+            <button class="add-btn" (click)="resetFilter()">Reset</button>
+          </div>
+        </div>
+
+
+        @if (showAddItem) {
+          <div class="add-item-form">
+            <div class="form-row">
+              <input [(ngModel)]="newItem.name" placeholder="Item Name" />
+              <input [(ngModel)]="newItem.category" placeholder="Category" />
+              <input [(ngModel)]="newItem.quantity" type="number" placeholder="Quantity" />
+              <input [(ngModel)]="newItem.price" type="number" placeholder="Price" />
+              <input [(ngModel)]="newItem.supplier" placeholder="Supplier" />
+              <button (click)="addItem()">Add</button>
+              <button (click)="showAddItem = false">Cancel</button>
+            </div>
+          </div>
+        }
+
+        <div class="table-container">
+          <table class="inventory-table">
+            <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Quantity</th>
+              <th>Price</th>
+              <th>Supplier</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (item of filteredItems; track item.id) {
+                <tr>
+                  <td>
+                    @if (editingItemId === item.id) {
+                      <input [(ngModel)]="editedItem.name" />
+                    } @else {
+                      {{ item.name }}
+                    }
+                  </td>
+                  <td>
+                    @if (editingItemId === item.id) {
+                      <input [(ngModel)]="editedItem.category" />
+                    } @else {
+                      {{ item.category }}
+                    }
+                  </td>
+                  <td>
+                    @if (editingItemId === item.id) {
+                      <input type="number" [(ngModel)]="editedItem.quantity" />
+                    } @else {
+                      {{ item.quantity }}
+                    }
+                  </td>
+                  <td>
+                    @if (editingItemId === item.id) {
+                      <input type="number" [(ngModel)]="editedItem.price" />
+                    } @else {
+                      ${{ item.price | number: '1.2-2' }}
+                    }
+                  </td>
+                  <td>
+                    @if (editingItemId === item.id) {
+                      <input [(ngModel)]="editedItem.supplier" />
+                    } @else {
+                      {{ item.supplier }}
+                    }
+                  </td>
+                  <td>
+                  <span class="status-badge" [class]="getStatusClass(item.quantity)">
+                    {{ getStatus(item.quantity) }}
+                  </span>
+                  </td>
+                  <td>
+                    @if (editingItemId === item.id) {
+                      <button class="action-btn edit" (click)="saveEdit()">Save</button>
+                      <button class="action-btn delete" (click)="cancelEdit()">Cancel</button>
+                    } @else {
+                      <button class="action-btn edit" (click)="editItem(item)">Edit</button>
+                      <button class="action-btn delete" (click)="deleteItem(item.id)">Delete</button>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="forecast-insights">
+      <div class="card">
+        <h3>Forecast Insights</h3>
+        <div class="insights-grid">
+
+          <div class="insight-item">
+            <h4>🔥 High Demand Items</h4>
+            <ul>
+              @for (item of getHighDemandItems(); track item.id) {
+                <li>
+                  {{ item.name }} - Expected: {{ item.forecast }} units
+                </li>
+              }
+            </ul>
+          </div>
+
+          <div class="insight-item">
+            <h4>⚠️ Reorder Recommendations</h4>
+            <ul>
+              @for (item of getReorderRecommendations(); track item.id) {
+                <li>
+                  {{ item.name }} - Reorder {{ item.recommended }} units
+                </li>
+              }
+            </ul>
+          </div>
+
+          <div class="insight-item">
+            <h4>📊 Seasonal Trends</h4>
+            <ul>
+              <li>Electronics demand up 25% this quarter</li>
+              <li>Clothing inventory turnover increased 15%</li>
+              <li>Home goods showing stable demand</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

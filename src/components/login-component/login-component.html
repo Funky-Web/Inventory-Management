@@ -1,0 +1,47 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h2>📦 Inventory Manager</h2>
+      <p>Admin Dashboard</p>
+    </div>
+
+    <form (ngSubmit)="login()" class="login-form">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          [(ngModel)]="credentials.username"
+          name="username"
+          placeholder="Enter username"
+          required>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          [(ngModel)]="credentials.password"
+          name="password"
+          placeholder="Enter password"
+          required>
+      </div>
+
+      <button type="submit" class="login-btn">
+        Sign In
+      </button>
+
+      <div class="demo-credentials">
+        <p>Demo Credentials:</p>
+        <p>Username: admin | Password: admin123</p>
+      </div>
+    </form>
+
+    @if (errorMessage) {
+      <div class="error-message">
+        {{ errorMessage }}
+      </div>
+    }
+  </div>
+</div>
