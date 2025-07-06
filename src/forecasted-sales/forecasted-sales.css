@@ -1,63 +1,107 @@
 .main {
-  width: 100%;
+  /*width: 100%;*/
+  max-width: 1200px;
+  margin-right: 30px;
+  /*padding: 32px 24px;*/
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  color: #2c3e50;
 }
 
 .header {
-  width: inherit;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  font-size: 28px;
+  font-weight: bold;
+  color: #34495e;
 }
 
 .forecasted-sales-overview {
   display: flex;
-  width: 20%;
   align-items: center;
+  gap: 12px;
 }
 
-.forecasted-sales-overview > img {
-  height: 40%;
+.forecasted-sales-overview img {
+  height: 32px;
 }
 
-.refresh-btn {
-  margin-right: 1%;
-  cursor: pointer !important;
+.forecasted-sales-overview h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #3498db;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.forecasted-sales-overview h3:hover {
+  color: #1d6fa5;
 }
 
 .product-selection {
-  width: inherit;
-  /*background-color: cadetblue;*/
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
 }
 
-.product-selection > select {
-  border-radius: 5px;
-  cursor: pointer !important;
+.product-selection select {
+  padding: 8px 12px;
   font-size: 15px;
-  padding: 5px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  transition: border-color 0.3s ease;
 }
 
-.product-selection > select > option {
-  font-size: 15px;
+.product-selection select:hover {
+  border-color: #3498db;
+}
+
+.forecast-start-and-end-date {
+  font-size: 14px;
+  color: #7f8c8d;
 }
 
 .product-forecast-table {
-  width: 98%;
-  border: 1px solid whitesmoke;
-  border-radius: 5px;
-  /*background-color: yellow;*/
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.product-forecast-table > table {
-  width: inherit;
-  /*background-color: orange;*/
+.product-forecast-table table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.product-forecast-table > table > tr > th {
-  background-color: whitesmoke;
-  text-align: start;
-  padding: 5px;
+.product-forecast-table th,
+.product-forecast-table td {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 14px;
 }
 
-.product-forecast-table > table > tr > td {
-  padding: 5px;
+.product-forecast-table th {
+  background-color: #ecf0f1;
+  font-weight: 600;
 }
 
+.product-forecast-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.product-forecast-table tbody tr:hover {
+  background-color: #f1f7fd;
+}
+
+.product-forecast-table img {
+  height: 24px;
+  vertical-align: middle;
+}

@@ -1,23 +1,36 @@
-
 <main class="main">
   <div class="side-nav-bar">
-    <h1>App Icon</h1>
+    <div class="nav-header">
+      <h1>
+        <i class="fas fa-cube"></i>
+        App Icon
+      </h1>
+    </div>
     <ul>
       <li>
-        <a routerLink="/" routerLinkActive="active-tab" [routerLinkActiveOptions]="{exact: true}">Home</a>
+        <a routerLink="/" routerLinkActive="active-tab" [routerLinkActiveOptions]="{exact: true}">
+          <i class="fas fa-home"></i>
+          Home
+        </a>
       </li>
       <li>
-        <a routerLink="forecasted-sales" routerLinkActive="active-tab" [routerLinkActiveOptions]="{exact: true}">Forecasted Sales</a>
+        <a routerLink="forecasted-sales" routerLinkActive="active-tab" [routerLinkActiveOptions]="{exact: true}">
+          <i class="fas fa-chart-line"></i>
+          Forecasted Sales
+        </a>
       </li>
       <li>
-        <a routerLink="forecast-sales" routerLinkActive="active-tab" [routerLinkActiveOptions]="{exact: true}">Forecast Sales</a>
+        <a routerLink="forecast-sales" routerLinkActive="active-tab" [routerLinkActiveOptions]="{exact: true}">
+          <i class="fas fa-analytics"></i>
+          Forecast Sales
+        </a>
       </li>
     </ul>
   </div>
 
   <div class="content">
     <div class="content-child">
-          <router-outlet></router-outlet>
+      <router-outlet></router-outlet>
     </div>
   </div>
 </main>

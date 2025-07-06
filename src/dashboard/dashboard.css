@@ -1,208 +1,339 @@
+/* CSS Styles */
 main {
-  height: 100%;
+  padding: 24px;
+  background-color: #f8f9fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  padding: 0 15px;
+  gap: 24px;
 }
 
-.header, .overview, .forecasted-sales-\&-recent-sales {
-  /*margin: 1%;*/
-  border-radius: 10px;
+
+.header, .overview > div, .forecasted-sales-main, .recent-sales-activity {
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+h2 {
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 24px;
+  margin: 0 0 8px 0;
 }
 
 h3 {
-  color: darkgrey;
-  font-weight: normal;
+  color: #6c757d;
+  font-weight: 400;
+  font-size: 14px;
+  margin: 0 0 8px 0;
+}
+
+h4 {
+  color: #495057;
+  font-weight: 500;
+  font-size: 13px;
+  margin: 8px 0 0 0;
+  text-align: center;
 }
 
 .header {
-  padding: 0 1%;
+  padding: 24px 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: rgba(0, 0, 0, 0.25) 0 1px 5px;
+  background: #ffffff;
+  border-left: 4px solid #667eea;
+}
+
+.header h2 {
+  color: #2c3e50;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.header > div h2 {
+  color: #667eea;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .overview {
-  display: flex;
-  justify-content: space-between;
-  height: fit-content;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
 }
 
 .overview > div {
-  width: 22%;
-  padding: 1%;
-  border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.25) 0 1px 5px;
+  padding: 24px;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.overview > div:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.overview > div:nth-child(1) {
+  border-left: 4px solid #3498db;
+}
+
+.overview > div:nth-child(2) {
+  border-left: 4px solid #2ecc71;
+}
+
+.overview > div:nth-child(3) {
+  border-left: 4px solid #e74c3c;
+}
+
+.overview > div:nth-child(4) {
+  border-left: 4px solid #f39c12;
+}
+
+.overview > div h2 {
+  font-size: 32px;
+  color: #2c3e50;
+  font-weight: 700;
 }
 
 .forecasted-sales-overview {
   display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
 }
 
-.forecasted-sales-overview > a > h3 {
-  color: blue;
+.forecasted-sales-overview img {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
+}
+
+.forecasted-sales-overview a {
+  text-decoration: none;
+}
+
+.forecasted-sales-overview a h3 {
+  color: #e74c3c;
+  font-weight: 600;
+  text-transform: capitalize;
+  transition: color 0.3s ease;
+}
+
+.forecasted-sales-overview a:hover h3 {
+  color: #c0392b;
+}
+
+.quick-actions-main h2 {
+  margin-bottom: 16px;
 }
 
 .quick-actions {
   display: flex;
-  justify-content: space-evenly;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .quick-actions > button {
+  flex: 1;
+  min-width: 120px;
   display: flex;
   flex-direction: column;
-  border-radius: 10px;
-  cursor: pointer !important;
-  align-content: center;
+  align-items: center;
   justify-content: center;
-  justify-items: center;
-  border-color: blue;
+  padding: 20px 12px;
+  border-radius: 12px;
+  border: 2px solid #dee2e6;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.quick-actions > button > img {
-  height: 40%;
+.quick-actions > button:hover {
+  transform: translateY(-2px);
+  border-color: #667eea;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+  background: #f8f9ff;
 }
 
-.quick-actions > button > h4 {
-  width: max-content;
-  margin: 0;
+.quick-actions > button img {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 8px;
 }
 
-
-
-
-
-
-
-.forecasted-sales-\&-recent-sales {
+.forecasted-sales-and-recent-sales {
   display: flex;
-  border-radius: 0;
-  justify-content: space-between;
-}
-
-.forecasted-sales-main, .recent-sales-activity {
-  border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.25) 0 1px 5px;
-  padding: 1%;
+  gap: 24px;
+  flex-wrap: wrap;
 }
 
 .forecasted-sales-main {
-  width: 64.5%;
+  flex: 2;
+  min-width: 400px;
+  padding: 24px;
+}
+
+.forecasted-sales-main h2 {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.forecasted-sales-main h2::before {
+  content: '📈';
+  font-size: 24px;
 }
 
 .recent-sales-activity {
-  width: 30%;
-  max-height: 350px;
-  overflow: scroll;
+  flex: 1;
+  min-width: 300px;
+  padding: 24px;
+  max-height: 400px;
   overflow-y: auto;
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: #c1c1c1 #f1f1f1;
 }
 
-.recent-sales-activity > table > tr > th {
-  text-align: start;
+.recent-sales-activity::-webkit-scrollbar {
+  width: 8px;
 }
 
-
-.recent-sales-activity > table {
-  text-align: start;
-  width: 100%;
+.recent-sales-activity::-webkit-scrollbar-track {
+  background: #f1f2f6;
+  border-radius: 4px;
 }
 
-.recent-sales-activity > h2 {
+.recent-sales-activity::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 4px;
+}
+
+.recent-sales-activity::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5a67d8, #6b46c1);
+}
+
+.recent-sales-activity h2 {
   position: sticky;
   top: 0;
-  z-index: 1;
-  background-color: white;
+  z-index: 2;
+  background: white;
+  margin: -24px -24px 20px -24px;
+  padding: 24px 24px 16px 24px;
+  border-bottom: 2px solid #f8f9fa;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
+.recent-sales-activity h2::before {
+  content: '🕒';
+  font-size: 24px;
+}
 
+.recent-sales-activity table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
 
+.recent-sales-activity table th {
+  text-align: left;
+  padding: 12px 8px;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  color: #495057;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #dee2e6;
+}
 
+.recent-sales-activity table td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #f1f3f4;
+  color: #495057;
+}
 
+.recent-sales-activity table tr:hover {
+  background: linear-gradient(135deg, #f8f9ff, #f0f4ff);
+}
 
+.recent-sales-activity table td img {
+  width: 20px;
+  height: 20px;
+}
 
-
-
-
-
-
-
-
-/*Mobile Screens*/
-@media (max-width: 736px)  {
-  .overview {
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    justify-items: center;
-    margin: 5%;
+/* Mobile Screens */
+@media (max-width: 736px) {
+  main {
+    padding: 16px;
+    gap: 16px;
   }
 
-  .header, .overview > div {
-    margin: 2.5%;
-    padding: 2.5%;
+  .header {
+    padding: 20px;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .header h2 {
+    font-size: 24px;
+  }
+
+  .overview {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .overview > div {
-    width: 100%;
+    padding: 20px;
   }
 
   .quick-actions {
-    justify-content: space-between;
-  }
-
-  .forecasted-sales-\&-recent-sales {
     flex-direction: column;
-    margin: 1%;
-  }
-
-  .recent-sales-activity > table {
-    width: 100%;
-  }
-
-  .recent-sales-activity {
-    padding: 2.5%;
-  }
-
-  .forecasted-sales-main, .recent-sales-activity {
-    margin: 2.5%;
-    padding: 2.5%;
-    width: inherit;
-  }
-}
-
-
-
-
-/* ----------- Tablets ----------- */
-@media (min-width: 736px) and (max-width: 1080px) {
-  .overview {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    justify-items: center;
-  }
-
-  .overview > div {
-    width: 90%;
-  }
-
-  .header, .overview > div {
-    margin: 2.5%;
-    padding: 2.5%;
-  }
-
-  .quick-actions > button > img {
-    height: 30%;
+    gap: 12px;
   }
 
   .quick-actions > button {
-    margin: 5px;
+    min-width: unset;
   }
 
-  .quick-actions > button > h4 {
-    width: fit-content;
+  .forecasted-sales-and-recent-sales {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .forecasted-sales-main, .recent-sales-activity {
+    min-width: unset;
+    padding: 20px;
+  }
+
+  .recent-sales-activity {
+    max-height: 300px;
+  }
+}
+
+/* Tablets */
+@media (min-width: 737px) and (max-width: 1080px) {
+  .overview {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .quick-actions > button {
+    min-width: 100px;
+    padding: 16px 8px;
+  }
+
+  .quick-actions > button img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .forecasted-sales-and-recent-sales {
+    flex-direction: column;
   }
 }

@@ -2,7 +2,7 @@ import {Component, inject} from '@angular/core';
 import {Dialog, DialogModule} from '@angular/cdk/dialog';
 import {Product} from '../core/product';
 import {ProductsService} from '../core/dao/products-service';
-import {AddNewProductDialog} from '../shared/add-new-product-dialog/add-new-product-dialog';
+import {ForecastProductDialog} from '../shared/add-new-product-dialog/forecast-product-dialog';
 
 @Component({
   selector: 'app-forecast-sales',
@@ -23,7 +23,7 @@ export class ForecastSales {
   openDialog(product: Product): void {
     this.selectedProduct = product;
 
-    this.dialog.open(AddNewProductDialog, {
+    this.dialog.open(ForecastProductDialog, {
       data: { product }
     });
   }
