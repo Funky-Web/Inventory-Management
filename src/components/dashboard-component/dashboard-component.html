@@ -49,6 +49,7 @@
       <div class="chart-section">
         <div class="card chart-card">
           <h3>Inventory Levels</h3>
+          <p class="chart-subtitle">Click on any bar to view product forecast</p>
           <div class="forecast-controls-left"></div>
           <div class="chart-wrapper">
             <canvas #inventoryChart></canvas>
@@ -58,7 +59,7 @@
 
       <div class="forecast-section">
         <div class="card chart-card">
-          <h3>Demand Forecast</h3>
+          <h3>Overall Demand Forecast</h3>
           <div class="forecast-controls">
             <select [(ngModel)]="forecastPeriod" (change)="updateForecast()">
               <option value="7">7 Days</option>
@@ -73,6 +74,47 @@
       </div>
     </div>
 
+    <!-- Product Forecast Modal -->
+    @if (showProductForecast) {
+      <div class="modal-overlay" (click)="closeProductForecast()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>📊 Product Forecast: {{ selectedProductName }}</h2>
+            <button class="close-btn" (click)="closeProductForecast()">×</button>
+          </div>
+
+          <div class="modal-body">
+            <div class="forecast-controls">
+              <label for="productForecastPeriod">Forecast Period:</label>
+              <select
+                id="productForecastPeriod"
+                [(ngModel)]="productForecastPeriod"
+                (change)="updateProductForecast()">
+                <option value="7">7 Days</option>
+                <option value="30">30 Days</option>
+                <option value="90">90 Days</option>
+              </select>
+            </div>
+
+            <div class="product-forecast-chart">
+              <canvas #productForecastChart></canvas>
+            </div>
+
+            <div class="forecast-insights-grid">
+              @for (insight of getProductForecastInsights(); track insight.label) {
+                <div class="insight-card">
+                  <div class="insight-icon">{{ insight.icon }}</div>
+                  <div class="insight-details">
+                    <h4>{{ insight.label }}</h4>
+                    <p>{{ insight.value }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    }
 
     <div class="tables-section" id="inventory-section">
       <div class="card">
@@ -96,7 +138,6 @@
             <button class="add-btn" (click)="resetFilter()">Reset</button>
           </div>
         </div>
-
 
         @if (showAddItem) {
           <div class="add-item-form">
@@ -168,13 +209,14 @@
                     {{ getStatus(item.quantity) }}
                   </span>
                   </td>
-                  <td>
+                  <td class="actions-cell">
                     @if (editingItemId === item.id) {
                       <button class="action-btn edit" (click)="saveEdit()">Save</button>
                       <button class="action-btn delete" (click)="cancelEdit()">Cancel</button>
                     } @else {
                       <button class="action-btn edit" (click)="editItem(item)">Edit</button>
                       <button class="action-btn delete" (click)="deleteItem(item.id)">Delete</button>
+                      <button class="action-btn forecast" (click)="selectProductForForecast(item)">Forecast</button>
                     }
                   </td>
                 </tr>

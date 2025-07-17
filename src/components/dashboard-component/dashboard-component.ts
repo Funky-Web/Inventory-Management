@@ -15,15 +15,24 @@ import {AuthService} from '../../services/auth-service';
 export class DashboardComponent implements AfterViewInit {
   @ViewChild('inventoryChart') inventoryChartRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('forecastChart') forecastChartRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('productForecastChart') productForecastChartRef!: ElementRef<HTMLCanvasElement>;
 
   inventoryChart!: Chart;
   forecastChart!: Chart;
+  productForecastChart!: Chart;
 
   searchTerm = '';
   forecastPeriod = '30';
   showAddItem = false;
   selectedStatus = 'all';
   filteredItems: any[] = [];
+
+  // Product forecasting properties
+  showProductForecast = false;
+  selectedProductId: number | null = null;
+  selectedProductName = '';
+  productForecastPeriod = '30';
+  forecastAccuracy = 87;
 
   editMode: boolean = false;
   editingItemId: number | null = null;
@@ -67,8 +76,14 @@ export class DashboardComponent implements AfterViewInit {
           }]
         },
         options: {
-          // maintainAspectRatio: false,
-          responsive: true
+          responsive: true,
+          onClick: (event, elements) => {
+            if (elements.length > 0) {
+              const index = elements[0].index;
+              const item = items[index];
+              this.selectProductForForecast(item);
+            }
+          }
         }
       });
     }
@@ -77,8 +92,8 @@ export class DashboardComponent implements AfterViewInit {
   }
 
   renderForecastChart() {
-    const forecastLabels = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5'];
-    const forecastData = [50, 60, 55, 70, 65]; // Mock
+    const forecastLabels = this.generateForecastLabels();
+    const forecastData = this.generateOverallForecastData();
 
     const ctx2 = this.forecastChartRef.nativeElement.getContext('2d');
     if (ctx2) {
@@ -89,7 +104,7 @@ export class DashboardComponent implements AfterViewInit {
         data: {
           labels: forecastLabels,
           datasets: [{
-            label: 'Forecast',
+            label: 'Overall Demand Forecast',
             data: forecastData,
             borderColor: '#764ba2',
             backgroundColor: 'rgba(118, 75, 162, 0.2)',
@@ -97,16 +112,178 @@ export class DashboardComponent implements AfterViewInit {
           }]
         },
         options: {
-          // maintainAspectRatio: false,
           responsive: true
         }
       });
     }
   }
 
+  renderProductForecastChart() {
+    if (!this.selectedProductId || !this.productForecastChartRef) return;
+
+    const forecastLabels = this.generateForecastLabels(this.productForecastPeriod);
+    const forecastData = this.generateProductForecastData(this.selectedProductId);
+
+    const ctx3 = this.productForecastChartRef.nativeElement.getContext('2d');
+    if (ctx3) {
+      if (this.productForecastChart) this.productForecastChart.destroy();
+
+      this.productForecastChart = new Chart(ctx3, {
+        type: 'line',
+        data: {
+          labels: forecastLabels,
+          datasets: [{
+            label: `${this.selectedProductName} Demand Forecast`,
+            data: forecastData,
+            borderColor: '#27ae60',
+            backgroundColor: 'rgba(39, 174, 96, 0.2)',
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Forecasted Demand'
+              }
+            }
+          }
+        }
+      });
+    }
+  }
+
+  generateForecastLabels(period: string = this.forecastPeriod): string[] {
+    const days = parseInt(period);
+    const labels: string[] = [];
+    const today = new Date();
+
+    for (let i = 1; i <= Math.min(days, 30); i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      labels.push(`Day ${i}`);
+    }
+
+    return labels;
+  }
+
+  generateOverallForecastData(): number[] {
+    const days = parseInt(this.forecastPeriod);
+    const data: number[] = [];
+    const baseValue = 50;
+
+    for (let i = 1; i <= Math.min(days, 30); i++) {
+      // Simulate seasonal trends and random variation
+      const seasonal = Math.sin(i * 0.1) * 10;
+      const random = (Math.random() - 0.5) * 20;
+      const trend = i * 0.5; // Slight upward trend
+      data.push(Math.max(0, baseValue + seasonal + random + trend));
+    }
+
+    return data;
+  }
+
+  generateProductForecastData(productId: number): number[] {
+    const days = parseInt(this.productForecastPeriod);
+    const data: number[] = [];
+    const item = this.inventoryService.getInventoryItems().find(i => i.id === productId);
+
+    if (!item) return [];
+
+    // Base forecast on current inventory levels and historical patterns
+    const baseValue = Math.max(1, Math.floor(item.quantity / 10));
+
+    for (let i = 1; i <= Math.min(days, 30); i++) {
+      // Simulate product-specific demand patterns
+      const seasonal = Math.sin(i * 0.15) * (baseValue * 0.3);
+      const random = (Math.random() - 0.5) * (baseValue * 0.4);
+      const categoryMultiplier = this.getCategoryMultiplier(item.category);
+      const trend = i * 0.1 * categoryMultiplier;
+
+      data.push(Math.max(0, Math.round(baseValue + seasonal + random + trend)));
+    }
+
+    return data;
+  }
+
+  getCategoryMultiplier(category: string): number {
+    // Different categories have different demand patterns
+    const multipliers: { [key: string]: number } = {
+      'Electronics': 1.2,
+      'Clothing': 0.8,
+      'Books': 0.6,
+      'Home': 1.0,
+      'Sports': 0.9
+    };
+
+    return multipliers[category] || 1.0;
+  }
+
+  selectProductForForecast(item: any) {
+    this.selectedProductId = item.id;
+    this.selectedProductName = item.name;
+    this.showProductForecast = true;
+
+    // Wait for the view to update before rendering chart
+    setTimeout(() => {
+      this.renderProductForecastChart();
+    }, 100);
+  }
 
   updateForecast() {
     this.renderForecastChart();
+  }
+
+  updateProductForecast() {
+    this.renderProductForecastChart();
+  }
+
+  closeProductForecast() {
+    this.showProductForecast = false;
+    this.selectedProductId = null;
+    this.selectedProductName = '';
+    if (this.productForecastChart) {
+      this.productForecastChart.destroy();
+    }
+  }
+
+  getProductForecastInsights(): any[] {
+    if (!this.selectedProductId) return [];
+
+    const item = this.inventoryService.getInventoryItems().find(i => i.id === this.selectedProductId);
+    if (!item) return [];
+
+    const forecastData = this.generateProductForecastData(this.selectedProductId);
+    const avgDemand = forecastData.reduce((a, b) => a + b, 0) / forecastData.length;
+    const maxDemand = Math.max(...forecastData);
+    const currentStock = item.quantity;
+    const daysUntilStockout = currentStock / avgDemand;
+
+    return [
+      {
+        label: 'Average Daily Demand',
+        value: `${avgDemand.toFixed(1)} units`,
+        icon: '📊'
+      },
+      {
+        label: 'Peak Demand Expected',
+        value: `${maxDemand} units`,
+        icon: '📈'
+      },
+      {
+        label: 'Current Stock Level',
+        value: `${currentStock} units`,
+        icon: '📦'
+      },
+      {
+        label: 'Days Until Stockout',
+        value: `${daysUntilStockout.toFixed(1)} days`,
+        icon: '⏰'
+      }
+    ];
   }
 
   logout() {
@@ -127,10 +304,8 @@ export class DashboardComponent implements AfterViewInit {
   }
 
   getForecastAccuracy(): number {
-    return 87;
+    return this.forecastAccuracy;
   }
-
-
 
   filterItems(): void {
     const term = this.searchTerm.trim().toLowerCase();
@@ -157,7 +332,6 @@ export class DashboardComponent implements AfterViewInit {
     this.filteredItems = this.inventoryService.getInventoryItems();
   }
 
-
   addItem() {
     if (this.newItem.name && this.newItem.category) {
       this.inventoryService.addItem({
@@ -174,7 +348,7 @@ export class DashboardComponent implements AfterViewInit {
   editItem(item: any) {
     this.editMode = true;
     this.editingItemId = item.id;
-    this.editedItem = { ...item }; // clone to avoid direct mutation
+    this.editedItem = { ...item };
   }
 
   saveEdit() {
@@ -183,10 +357,10 @@ export class DashboardComponent implements AfterViewInit {
       this.editMode = false;
       this.editingItemId = null;
       this.editedItem = {};
-      this.filterItems(); // Refresh the displayed list
+      this.filterItems();
+      this.initializeCharts();
     }
   }
-
 
   cancelEdit() {
     this.editMode = false;
@@ -200,7 +374,6 @@ export class DashboardComponent implements AfterViewInit {
     this.initializeCharts();
   }
 
-
   getStatus(quantity: number): string {
     if (quantity === 0) return 'Out of Stock';
     if (quantity < 10) return 'Low Stock';
@@ -212,8 +385,6 @@ export class DashboardComponent implements AfterViewInit {
     if (quantity < 10) return 'low-stock';
     return 'in-stock';
   }
-
-
 
   getHighDemandItems() {
     return [
@@ -233,8 +404,6 @@ export class DashboardComponent implements AfterViewInit {
       }));
   }
 
-
-
   scrollToInventory(): void {
     const section = document.getElementById('inventory-section');
     if (section) {
@@ -243,10 +412,9 @@ export class DashboardComponent implements AfterViewInit {
   }
 
   scrollToLowStock(): void {
-    // Manually set the filters
     this.searchTerm = '';
     this.selectedStatus = 'low';
-    this.filterItems(); // Call the method without arguments
+    this.filterItems();
 
     setTimeout(() => {
       const section = document.getElementById('inventory-section');
@@ -264,5 +432,4 @@ export class DashboardComponent implements AfterViewInit {
       }
     }, 100);
   }
-
 }
