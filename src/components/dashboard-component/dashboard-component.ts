@@ -37,7 +37,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   showAddItem = false;
   selectedStatus = 'all';
   isLoading = false;
+  isSidebarCollapsed = false;
+  activeTab = 'dashboard';
   errorMessage = '';
+  successMessage = '';
+  showNotifications = false;
 
   // Product forecast
   showProductForecast = false;
@@ -61,6 +65,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     maxStockLevel: 100
   };
 
+  // Progress tracking
+  loadingProgress = 0;
+  operationInProgress = false;
+
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -70,7 +78,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // Load data only after user is ready
     this.authService.user$.pipe(takeUntil(this.destroy$)).subscribe(user => {
       this.currentUser = user;
       if (user) {
@@ -89,15 +96,22 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private async loadInitialData() {
     this.isLoading = true;
+    this.loadingProgress = 0;
     this.errorMessage = '';
 
     try {
-      await Promise.all([
+      const tasks = [
         this.loadInventoryItems(),
         this.loadMetrics(),
         this.loadCategories(),
         this.loadSuppliers()
-      ]);
+      ];
+
+      for (let i = 0; i < tasks.length; i++) {
+        await tasks[i];
+        this.loadingProgress = ((i + 1) / tasks.length) * 100;
+      }
+
       this.isLoading = false;
       this.initializeCharts();
     } catch (error) {
@@ -156,10 +170,17 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private getCurrentUser() {
-    this.authService.user$.pipe(takeUntil(this.destroy$)).subscribe(user => {
-      this.currentUser = user;
-    });
+  // Sidebar and navigation
+  toggleSidebar() {
+    this.isSidebarCollapsed = !this.isSidebarCollapsed;
+  }
+
+  setActiveTab(tab: string) {
+    this.activeTab = tab;
+  }
+
+  toggleNotifications() {
+    this.showNotifications = !this.showNotifications;
   }
 
   initializeCharts() {
@@ -180,10 +201,36 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         type: 'bar',
         data: {
           labels,
-          datasets: [{ label: 'Inventory Quantity', data, backgroundColor: '#667eea' }]
+          datasets: [{
+            label: 'Current Stock',
+            data,
+            backgroundColor: 'rgba(99, 102, 241, 0.8)',
+            borderColor: 'rgb(99, 102, 241)',
+            borderWidth: 1,
+            borderRadius: 4
+          }]
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              }
+            }
+          },
           onClick: (_, elements) => {
             if (elements.length > 0) {
               const index = elements[0].index;
@@ -215,18 +262,43 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         data: {
           labels: forecast.labels,
           datasets: [{
-            label: 'Overall Demand Forecast',
+            label: 'Demand Forecast',
             data: forecast.values,
-            borderColor: '#764ba2',
-            backgroundColor: 'rgba(118, 75, 162, 0.2)',
-            fill: true
+            borderColor: 'rgb(34, 197, 94)',
+            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+            pointHoverRadius: 6
           }]
         },
-        options: { responsive: true }
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              }
+            }
+          }
+        }
       });
     }
   }
 
+  // Modal and UI operations
   selectProductForForecast(item: InventoryItem) {
     this.selectedProductId = item.id;
     this.selectedProductName = item.name;
@@ -262,15 +334,17 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         data: {
           labels: this.productForecastData.forecast.labels,
           datasets: [{
-            label: `${this.selectedProductName} Demand Forecast`,
+            label: `${this.selectedProductName} Forecast`,
             data: this.productForecastData.forecast.values,
-            borderColor: '#27ae60',
-            backgroundColor: 'rgba(39, 174, 96, 0.2)',
-            fill: true
+            borderColor: 'rgb(168, 85, 247)',
+            backgroundColor: 'rgba(168, 85, 247, 0.1)',
+            fill: true,
+            tension: 0.4
           }]
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           scales: {
             y: { beginAtZero: true, title: { display: true, text: 'Forecasted Demand' } }
           }
@@ -279,7 +353,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // UI Event Handlers
   updateForecast() {
     this.renderForecastChart();
   }
@@ -299,13 +372,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   logout() {
+    this.operationInProgress = true;
     this.authService.logout().subscribe({
       next: () => {
-        // Logout handled by interceptor/service
+        this.operationInProgress = false;
       },
       error: (error) => {
         console.error('Logout error:', error);
-        // Force logout even if API call fails
+        this.operationInProgress = false;
         window.location.reload();
       }
     });
@@ -339,10 +413,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   addItem() {
     if (!this.newItem.name || !this.newItem.category) {
-      this.errorMessage = 'Name and category are required';
+      this.showError('Name and category are required');
       return;
     }
 
+    this.operationInProgress = true;
     this.inventoryService.createItem(this.newItem)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -360,14 +435,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             };
             this.showAddItem = false;
             this.filterItems();
-            this.loadMetrics(); // Refresh metrics
+            this.loadMetrics();
             this.renderInventoryChart();
-            this.errorMessage = '';
+            this.showSuccess('Item added successfully');
+            this.operationInProgress = false;
           }
         },
         error: (error) => {
           console.error('Error adding item:', error);
-          this.errorMessage = 'Failed to add item';
+          this.showError('Failed to add item');
+          this.operationInProgress = false;
         }
       });
   }
@@ -380,6 +457,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   saveEdit() {
     if (this.editingItemId === null) return;
 
+    this.operationInProgress = true;
     this.inventoryService.updateItem(this.editingItemId, this.editedItem)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -394,12 +472,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.filterItems();
             this.loadMetrics();
             this.renderInventoryChart();
-            this.errorMessage = '';
+            this.showSuccess('Item updated successfully');
+            this.operationInProgress = false;
           }
         },
         error: (error) => {
           console.error('Error updating item:', error);
-          this.errorMessage = 'Failed to update item';
+          this.showError('Failed to update item');
+          this.operationInProgress = false;
         }
       });
   }
@@ -414,6 +494,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    this.operationInProgress = true;
     this.inventoryService.deleteItem(id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -423,14 +504,27 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.filterItems();
             this.loadMetrics();
             this.renderInventoryChart();
-            this.errorMessage = '';
+            this.showSuccess('Item deleted successfully');
+            this.operationInProgress = false;
           }
         },
         error: (error) => {
           console.error('Error deleting item:', error);
-          this.errorMessage = 'Failed to delete item';
+          this.showError('Failed to delete item');
+          this.operationInProgress = false;
         }
       });
+  }
+
+  // Notification methods
+  private showError(message: string) {
+    this.errorMessage = message;
+    setTimeout(() => this.errorMessage = '', 5000);
+  }
+
+  private showSuccess(message: string) {
+    this.successMessage = message;
+    setTimeout(() => this.successMessage = '', 5000);
   }
 
   // Utility methods
@@ -470,11 +564,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   getStatusClass(item: InventoryItem): string {
     switch (item.status) {
       case StockStatus.IN_STOCK:
-        return 'in-stock';
+        return 'status-success';
       case StockStatus.LOW_STOCK:
-        return 'low-stock';
+        return 'status-warning';
       case StockStatus.OUT_OF_STOCK:
-        return 'out-of-stock';
+        return 'status-danger';
       default:
         return '';
     }
@@ -485,7 +579,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getHighDemandItems() {
-    // This should be fetched from backend in real implementation
     return this.inventoryItems
       .filter(item => item.quantity > 50)
       .slice(0, 3)
@@ -504,6 +597,49 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         name: item.name,
         recommended: Math.max(item.maxStockLevel || 50, item.quantity * 3)
       }));
+  }
+
+  private destroyCharts() {
+    if (this.inventoryChart) this.inventoryChart.destroy();
+    if (this.forecastChart) this.forecastChart.destroy();
+    if (this.productForecastChart) this.productForecastChart.destroy();
+  }
+
+  // Mock data generators
+  private generateMockForecastData(): ForecastData {
+    const days = parseInt(this.forecastPeriod);
+    const labels = Array.from({ length: Math.min(days, 30) }, (_, i) => `Day ${i + 1}`);
+    const values = labels.map((_, i) =>
+      Math.max(0, 50 + Math.sin(i * 0.1) * 10 + (Math.random() - 0.5) * 20 + i * 0.5)
+    );
+    return {
+      labels,
+      values,
+      period: `${days} days`,
+      startDate: new Date().toDateString(),
+      endDate: new Date(Date.now() + days * 86400000).toDateString()
+    };
+  }
+
+  private generateMockProductForecast(): ProductForecast {
+    const days = parseInt(this.productForecastPeriod);
+    const labels = Array.from({ length: Math.min(days, 30) }, (_, i) => `Day ${i + 1}`);
+    const values = labels.map(() => Math.floor(Math.random() * 20) + 5);
+    return {
+      productId: this.selectedProductId!,
+      productName: this.selectedProductName,
+      forecast: {
+        labels,
+        values,
+        period: `${days} days`,
+        startDate: new Date().toDateString(),
+        endDate: new Date(Date.now() + days * 86400000).toDateString()
+      },
+      insights: [
+        { label: 'Daily Average', value: '15.2 units', icon: '📊' },
+        { label: 'Peak Expected', value: '25 units', icon: '📈' }
+      ]
+    };
   }
 
   scrollToInventory(): void {
@@ -535,46 +671,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 100);
   }
 
-  private destroyCharts() {
-    if (this.inventoryChart) this.inventoryChart.destroy();
-    if (this.forecastChart) this.forecastChart.destroy();
-    if (this.productForecastChart) this.productForecastChart.destroy();
+
+  getPageTitle(): string {
+    switch (this.activeTab) {
+      case 'inventory':
+        return 'Inventory Management';
+      case 'analytics':
+        return 'Analytics Overview';
+      case 'reports':
+        return 'Reports';
+      default:
+        return 'Dashboard';
+    }
   }
 
-  // Mock fallback generators (same as your original)
-  private generateMockForecastData(): ForecastData {
-    const days = parseInt(this.forecastPeriod);
-    const labels = Array.from({ length: Math.min(days, 30) }, (_, i) => `Day ${i + 1}`);
-    const values = labels.map((_, i) =>
-      Math.max(0, 50 + Math.sin(i * 0.1) * 10 + (Math.random() - 0.5) * 20 + i * 0.5)
-    );
-    return {
-      labels,
-      values,
-      period: `${days} days`,
-      startDate: new Date().toDateString(),
-      endDate: new Date(Date.now() + days * 86400000).toDateString()
-    };
-  }
-
-  private generateMockProductForecast(): ProductForecast {
-    const days = parseInt(this.productForecastPeriod);
-    const labels = Array.from({ length: Math.min(days, 30) }, (_, i) => `Day ${i + 1}`);
-    const values = labels.map(() => Math.floor(Math.random() * 20) + 5);
-    return {
-      productId: this.selectedProductId!,
-      productName: this.selectedProductName,
-      forecast: {
-        labels,
-        values,
-        period: `${days} days`,
-        startDate: new Date().toDateString(),
-        endDate: new Date(Date.now() + days * 86400000).toDateString()
-      },
-      insights: [
-        { label: 'Average Daily Demand', value: '15.2 units', icon: '📊', description: 'Expected daily demand' },
-        { label: 'Peak Demand Expected', value: '25 units', icon: '📈', description: 'Highest single day demand' }
-      ]
-    };
-  }
 }
