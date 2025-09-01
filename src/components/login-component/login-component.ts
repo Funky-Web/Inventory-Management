@@ -1,16 +1,16 @@
-import {Component, EventEmitter, Output} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {AuthService} from '../../services/auth-service';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { HttpAuthService, LoginRequest } from '../../services/auth-service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login-component',
-  imports: [
-    FormsModule
-  ],
+  imports: [FormsModule, CommonModule],
   templateUrl: './login-component.html',
+  standalone: true,
   styleUrl: './login-component.css'
 })
-export class LoginComponent {
+export class UpdatedLoginComponent {
 
   @Output() loginSuccess = new EventEmitter<void>();
 
@@ -20,16 +20,38 @@ export class LoginComponent {
   };
 
   errorMessage = '';
+  isLoading = false;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: HttpAuthService) {}
 
   login() {
-    const success = this.authService.login(this.credentials.username, this.credentials.password);
-    if (success) {
-      this.loginSuccess.emit();
-    } else {
-      this.errorMessage = 'Invalid credentials. Please try again.';
+    if (!this.credentials.username || !this.credentials.password) {
+      this.errorMessage = 'Please enter both username and password';
+      return;
     }
-  }
 
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    const loginRequest: LoginRequest = {
+      username: this.credentials.username,
+      password: this.credentials.password
+    };
+
+    this.authService.login(loginRequest).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.loginSuccess.emit();
+        } else {
+          this.errorMessage = response.message || 'Login failed';
+        }
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Login error:', error);
+        this.errorMessage = error.error?.message || 'Invalid credentials. Please try again.';
+        this.isLoading = false;
+      }
+    });
+  }
 }

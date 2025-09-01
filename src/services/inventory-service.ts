@@ -1,54 +1,155 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../environments/environment';
 
-interface InventoryItem {
+export interface InventoryItem {
   id: number;
   name: string;
   category: string;
   quantity: number;
   price: number;
   supplier: string;
+  minStockLevel: number;
+  maxStockLevel: number;
+  status: StockStatus;
+  createdAt: string;
+  updatedAt: string;
+  createdBy?: string;
+  updatedBy?: string;
+}
+
+export interface CreateInventoryItem {
+  name: string;
+  category: string;
+  quantity: number;
+  price: number;
+  supplier: string;
+  minStockLevel?: number;
+  maxStockLevel?: number;
+}
+
+export interface UpdateInventoryItem {
+  name?: string;
+  category?: string;
+  quantity?: number;
+  price?: number;
+  supplier?: string;
+  minStockLevel?: number;
+  maxStockLevel?: number;
+}
+
+export interface InventoryMetrics {
+  totalItems: number;
+  lowStockCount: number;
+  outOfStockCount: number;
+  totalValue: number;
+  forecastAccuracy: number;
+}
+
+export interface InventoryFilter {
+  searchTerm?: string;
+  category?: string;
+  supplier?: string;
+  status?: StockStatus;
+  page?: number;
+  size?: number;
+  sortBy?: string;
+  sortDirection?: string;
+}
+
+export interface PageResponse<T> {
+  content: T[];
+  pageable: {
+    pageNumber: number;
+    pageSize: number;
+    sort: {
+      sorted: boolean;
+      unsorted: boolean;
+    };
+  };
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
+  first: boolean;
+  numberOfElements: number;
+}
+
+export enum StockStatus {
+  IN_STOCK = 'IN_STOCK',
+  LOW_STOCK = 'LOW_STOCK',
+  OUT_OF_STOCK = 'OUT_OF_STOCK'
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+  timestamp: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
-export class InventoryService {
+export class HttpInventoryService {
+  private readonly API_URL = `${environment.apiUrl}/api/inventory`;
 
-  constructor() { }
+  constructor(private http: HttpClient) {}
 
-  private inventoryItems: InventoryItem[] = [];
+  getAllItems(filter?: InventoryFilter): Observable<ApiResponse<PageResponse<InventoryItem>>> {
+    let params = new HttpParams();
 
-  generateSampleData() {
-    this.inventoryItems = [
-      { id: 1, name: 'Laptop Pro', category: 'Electronics', quantity: 15, price: 1299.99, supplier: 'TechCorp' },
-      { id: 2, name: 'Wireless Mouse', category: 'Electronics', quantity: 45, price: 29.99, supplier: 'TechCorp' },
-      { id: 3, name: 'Monitor 4K', category: 'Electronics', quantity: 8, price: 399.99, supplier: 'DisplayTech' },
-      { id: 4, name: 'Office Chair', category: 'Furniture', quantity: 25, price: 249.99, supplier: 'ComfortSeats' },
-      { id: 5, name: 'Desk Lamp', category: 'Furniture', quantity: 30, price: 79.99, supplier: 'LightUp' },
-      { id: 6, name: 'Notebook Set', category: 'Stationery', quantity: 5, price: 12.99, supplier: 'PaperPlus' },
-      { id: 7, name: 'Pen Pack', category: 'Stationery', quantity: 60, price: 8.99, supplier: 'WriteWell' },
-      { id: 8, name: 'Coffee Maker', category: 'Appliances', quantity: 12, price: 159.99, supplier: 'BrewMaster' },
-      { id: 9, name: 'Water Bottle', category: 'Accessories', quantity: 3, price: 19.99, supplier: 'HydroGear' },
-      { id: 10, name: 'Keyboard', category: 'Electronics', quantity: 20, price: 89.99, supplier: 'TechCorp' }
-    ];
-  }
-
-  getInventoryItems(): InventoryItem[] {
-    return this.inventoryItems;
-  }
-
-  addItem(item: InventoryItem) {
-    this.inventoryItems.push(item);
-  }
-
-  deleteItem(id: number) {
-    this.inventoryItems = this.inventoryItems.filter(item => item.id !== id);
-  }
-
-  updateItem(id: number, updatedItem: Partial<InventoryItem>) {
-    const index = this.inventoryItems.findIndex(item => item.id === id);
-    if (index !== -1) {
-      this.inventoryItems[index] = { ...this.inventoryItems[index], ...updatedItem };
+    if (filter) {
+      if (filter.searchTerm) params = params.set('searchTerm', filter.searchTerm);
+      if (filter.category) params = params.set('category', filter.category);
+      if (filter.supplier) params = params.set('supplier', filter.supplier);
+      if (filter.status) params = params.set('status', filter.status);
+      if (filter.page !== undefined) params = params.set('page', filter.page.toString());
+      if (filter.size !== undefined) params = params.set('size', filter.size.toString());
+      if (filter.sortBy) params = params.set('sortBy', filter.sortBy);
+      if (filter.sortDirection) params = params.set('sortDirection', filter.sortDirection);
     }
+
+    return this.http.get<ApiResponse<PageResponse<InventoryItem>>>(this.API_URL, { params });
+  }
+
+  getItemById(id: number): Observable<ApiResponse<InventoryItem>> {
+    return this.http.get<ApiResponse<InventoryItem>>(`${this.API_URL}/${id}`);
+  }
+
+  createItem(item: CreateInventoryItem): Observable<ApiResponse<InventoryItem>> {
+    return this.http.post<ApiResponse<InventoryItem>>(this.API_URL, item);
+  }
+
+  updateItem(id: number, item: UpdateInventoryItem): Observable<ApiResponse<InventoryItem>> {
+    return this.http.put<ApiResponse<InventoryItem>>(`${this.API_URL}/${id}`, item);
+  }
+
+  deleteItem(id: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${this.API_URL}/${id}`);
+  }
+
+  getMetrics(): Observable<ApiResponse<InventoryMetrics>> {
+    return this.http.get<ApiResponse<InventoryMetrics>>(`${this.API_URL}/metrics`);
+  }
+
+  getLowStockItems(): Observable<ApiResponse<InventoryItem[]>> {
+    return this.http.get<ApiResponse<InventoryItem[]>>(`${this.API_URL}/low-stock`);
+  }
+
+  getOutOfStockItems(): Observable<ApiResponse<InventoryItem[]>> {
+    return this.http.get<ApiResponse<InventoryItem[]>>(`${this.API_URL}/out-of-stock`);
+  }
+
+  getCategories(): Observable<ApiResponse<string[]>> {
+    return this.http.get<ApiResponse<string[]>>(`${this.API_URL}/categories`);
+  }
+
+  getSuppliers(): Observable<ApiResponse<string[]>> {
+    return this.http.get<ApiResponse<string[]>>(`${this.API_URL}/suppliers`);
+  }
+
+  getReorderRecommendations(): Observable<ApiResponse<InventoryItem[]>> {
+    return this.http.get<ApiResponse<InventoryItem[]>>(`${this.API_URL}/reorder-recommendations`);
   }
 }

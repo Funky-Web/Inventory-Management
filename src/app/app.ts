@@ -1,15 +1,14 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import {AuthService} from '../services/auth-service';
-import {InventoryService} from '../services/inventory-service';
-import {LoginComponent} from '../components/login-component/login-component';
 import {DashboardComponent} from '../components/dashboard-component/dashboard-component';
+import {UpdatedLoginComponent} from '../components/login-component/login-component';
+import {HttpAuthService} from '../services/auth-service';
+import {HttpInventoryService} from '../services/inventory-service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, LoginComponent, DashboardComponent],
+  imports: [CommonModule, UpdatedLoginComponent, DashboardComponent],
   template: `
     <div class="app-container">
       <app-login-component
@@ -31,11 +30,11 @@ import {DashboardComponent} from '../components/dashboard-component/dashboard-co
 })
 export class App implements OnInit {
 
-  authService = inject(AuthService);
-  inventoryService = inject(InventoryService);
+  authService = inject(HttpAuthService);
+  inventoryService = inject(HttpInventoryService);
 
   ngOnInit(): void {
-    this.inventoryService.generateSampleData();
+    this.inventoryService.getAllItems();
   }
 
   onLoginSuccess() {

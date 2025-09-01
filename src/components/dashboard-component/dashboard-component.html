@@ -205,9 +205,9 @@
                     }
                   </td>
                   <td>
-                  <span class="status-badge" [class]="getStatusClass(item.quantity)">
-                    {{ getStatus(item.quantity) }}
-                  </span>
+                    <span class="status-badge" [class]="getStatusClass(item)">
+                      {{ getStatus(item) }}
+                    </span>
                   </td>
                   <td class="actions-cell">
                     @if (editingItemId === item.id) {
